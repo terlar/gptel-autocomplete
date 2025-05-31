@@ -204,13 +204,17 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
              (message "gptel-complete failed: %s" (plist-get info :status))
            (let* ((trimmed (string-trim response))
                   ;; Extract code from markdown code blocks
-                  (code-content (if (string-match "^```\\(?:[a-zA-Z]*\\)?\n\\(\\(?:.\\|\n\\)*?\\)\n```$" trimmed)
+                  (code-content (if (string-match
+                                     "^```\\(?:[a-zA-Z]*\\)?\n\\(\\(?:.\\|\n\\)*?\\)\n```$"
+                                     trimmed)
                                     (match-string 1 trimmed)
                                   trimmed))
                   ;; Extract content between START_COMPLETION and END_COMPLETION markers
                   (completion-text
                    (if (and code-content
-                           (string-match "█START_COMPLETION█\n\\(\\(?:.\\|\n\\)*?\\)\n█END_COMPLETION█" code-content))
+                            (string-match
+                             "█START_COMPLETION█\n\\(\\(?:.\\|\n\\)*?\\)\n█END_COMPLETION█"
+                             code-content))
                        (let ((extracted (match-string 1 code-content)))
                          (gptel--log "Extracted completion between markers: %S" extracted)
                          ;; Remove the part before cursor on the current line
@@ -220,7 +224,9 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
                                    (first-line (car (split-string extracted "\n"))))
                                (if (and first-line
                                        (string-prefix-p before-cursor-in-line first-line))
-                                   (let ((remainder (substring first-line (length before-cursor-in-line))))
+                                   (let ((remainder (substring
+                                                     first-line
+                                                     (length before-cursor-in-line))))
                                      (if (cdr lines)
                                          (concat remainder "\n" (string-join (cdr lines) "\n"))
                                        remainder))
@@ -233,7 +239,9 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
                                (not (string-empty-p before-cursor-in-line)))
                            (let ((overlap-pos (string-search before-cursor-in-line code-content)))
                              (if overlap-pos
-                                 (substring code-content (+ overlap-pos (length before-cursor-in-line)))
+                                 (substring code-content
+                                            (+ overlap-pos
+                                               (length before-cursor-in-line)))
                                code-content))
                          code-content)))))
              (setq gptel--completion-text completion-text)
