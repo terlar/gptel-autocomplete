@@ -4,9 +4,10 @@
 
 ## Features
 
-- Request completions from LLMs with context around the cursor (context window size is configurable).
+- Request completions from LLMs.
 - Display inline ghost text completions.
 - Accept completions to insert them into your buffer.
+- Includes context around the cursor (context window size is configurable).
 - Provide additional context using standard `gptel` features (e.g. `gptel-add`).
 
 ## Requirements
@@ -16,7 +17,7 @@
 
 ## Installation
 
-First, follow the [gptel setup instructions](https://github.com/karthink/gptel) to install and configure `gptel` and set your OpenAI API key.
+First, follow the [gptel setup instructions](https://github.com/karthink/gptel) to install and configure `gptel`.
 
 Then, install `gptel-autocomplete` using `straight.el` by adding the following to your Emacs config:
 
@@ -36,8 +37,8 @@ After installation, require and enable the package as needed:
 You can customize the amount of context sent before and after the cursor:
 
 ```elisp
-(setq gptel-autocomplete-before-context 10000)
-(setq gptel-autocomplete-after-context 1000)
+(setq gptel-autocomplete-before-context-lines 100)
+(setq gptel-autocomplete-after-context-lines 20)
 ```
 
 Set a custom temperature (lower values tend to yield better results):
@@ -63,7 +64,7 @@ You can bind these commands to convenient keys in your preferred programming mod
 
 ### AI use disclaimer
 
-`gptel-autocomplete.el` was written by Claude Sonnet 4.
+`gptel-autocomplete.el` was mostly written by Claude Sonnet 4.
 
 ### Which LLMs work best?
 

@@ -26,13 +26,13 @@
   :type 'boolean
   :group 'gptel-autocomplete)
 
-(defcustom gptel-autocomplete-before-context 6000
+(defcustom gptel-autocomplete-before-context-lines 100
   "Number of characters to include before the cursor for context.
 A larger value provides more context but may hit token limits."
   :type 'integer
   :group 'gptel-autocomplete)
 
-(defcustom gptel-autocomplete-after-context 1000
+(defcustom gptel-autocomplete-after-context-lines 20
   "Number of characters to include after the cursor for context.
 A smaller value is usually sufficient since the model primarily
 needs to understand what comes before the cursor."
@@ -95,9 +95,14 @@ This value will override `gptel-temperature` when calling `gptel-complete`."
          (before-cursor-in-line (substring current-line 0 cursor-pos-in-line))
          (after-cursor-in-line (substring current-line cursor-pos-in-line))
          (before-start (max (point-min)
-                           (- line-start gptel-autocomplete-before-context)))
+                           (save-excursion
+                             (forward-line (- gptel-autocomplete-before-context-lines))
+                             (line-beginning-position))))
          (after-end (min (point-max)
-                        (+ line-end gptel-autocomplete-after-context)))
+                        (save-excursion
+                          (goto-char line-end)
+                          (forward-line gptel-autocomplete-after-context-lines)
+                          (line-end-position))))
          (before-context (buffer-substring-no-properties before-start line-start))
          (after-context (buffer-substring-no-properties line-end after-end))
          ;; Construct the marked context with completion boundaries
