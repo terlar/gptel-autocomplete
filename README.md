@@ -74,23 +74,23 @@ I've tested it on gpt-4.1-mini, Qwen3 14B, and Devstral Small 2505. It's worked 
 
 `gptel` uses chat completion requests which aren't a natural fit for inline code completion. Simple prompts yield poor results, for example:
 
-```
+````
 Complete the following code:
-\```typescript
+```typescript
 function calculateArea(width: number, height: number): number {
   return width * 
-\```
 ```
+````
 
 This would typically return something like:
 
-```
-\```typescript
+````
+```typescript
 function calculateArea(width: number, height: number): number {
   return width * area;
 }
-\```
 ```
+````
 
 When what I wanted is:
 
