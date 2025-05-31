@@ -74,13 +74,18 @@ I've tested it on gpt-4.1-mini, Qwen3 14B, and Devstral Small 2505. It's worked 
 
 `gptel` uses chat completion requests which aren't a natural fit for inline code completion. Simple prompts yield poor results, for example:
 
-````
-Complete the following code:
-```typescript
+System prompt:
+```
+Complete the code provided by the user. Only include the text that logically follows.
+
+NEVER repeat back the users' input.
+```
+
+User prompt:
+```
 function calculateArea(width: number, height: number): number {
   return width * 
 ```
-````
 
 This would typically return something like:
 
@@ -99,6 +104,7 @@ area;
 ```
 
 Some common issues encountered in responses:
+- Included backtick code blocks.
 - Included extra characters that conflicted with following lines (e.g. closing brackets).
 - Included prior lines from the input rather than just net-new completion text.
 
@@ -106,7 +112,7 @@ The approach I took was to lean into the way the chat models want to produce out
 
 I found the following techniques yielded good results:
 - Ask for the response to be contained within backtick code blocks. Chat models *really* don't like returning code on its own.
-- Have the response include the current line being completed (the prefix is stripped out in post processing). Chat models *really* don't like sending incomplete lines of code.
+- Have the response include the current line being completed (this is then stripped out in post-processing). Chat models *really* don't like sending incomplete lines of code.
 - Include markers surrounding the line to be completed, to make it clear to the model that code should not be generated outside of this section. Also ask for the reponse to include these markers, which helps reinforce that this is the only region that should be modified.
 - Include an explicit cursor marker.
 - Provide explicit examples of bad output in the system prompt.
