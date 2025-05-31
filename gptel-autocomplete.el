@@ -39,6 +39,12 @@ needs to understand what comes before the cursor."
   :type 'integer
   :group 'gptel-autocomplete)
 
+(defcustom gptel-autocomplete-temperature 0.1
+  "Temperature to use for code‐completion requests in `gptel-complete`.
+This value will override `gptel-temperature` when calling `gptel-complete`."
+  :type 'number
+  :group 'gptel-autocomplete)
+
 (defvar gptel--completion-text nil
   "Current GPTel completion text.")
 
@@ -80,7 +86,8 @@ needs to understand what comes before the cursor."
   "Request a completion from ChatGPT and display it as ghost text."
   (interactive)
   (gptel-clear-completion)
-  (let* ((filename (file-name-nondirectory (buffer-file-name)))
+  (let* ((gptel-temperature gptel-autocomplete-temperature)
+         (filename (file-name-nondirectory (buffer-file-name)))
          (line-start (line-beginning-position))
          (line-end (line-end-position))
          (cursor-pos-in-line (- (point) line-start))
@@ -190,7 +197,6 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
 "
      :buffer (current-buffer)
      :position target-point
-     :temperature 0.1
      :callback
      (lambda (response info)
        (gptel--log "Callback invoked: status=%s, request-id=%d, current-id=%d, raw-response=%S"
