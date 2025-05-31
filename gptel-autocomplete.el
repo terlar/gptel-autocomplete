@@ -190,6 +190,7 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
 "
      :buffer (current-buffer)
      :position target-point
+     :temperature 0.1
      :callback
      (lambda (response info)
        (gptel--log "Callback invoked: status=%s, request-id=%d, current-id=%d, raw-response=%S"
