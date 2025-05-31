@@ -206,8 +206,18 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
        (if (not (eq request-id gptel--completion-request-id))
            (gptel--log "Ignoring outdated request %d (current: %d)"
                        request-id gptel--completion-request-id)
-         (if (not response)
-             (message "gptel-complete failed: %s" (plist-get info :status))
+         (pcase response
+           ((pred null)
+            (message "gptel-complete failed: %s" (plist-get info :status)))
+           (`abort
+            (gptel--log "Request aborted"))
+           (`(tool-call . ,tool-calls)
+            (gptel--log "Ignoring tool-call response: %S" tool-calls))
+           (`(tool-result . ,tool-results)
+            (gptel--log "Ignoring tool-result response: %S" tool-results))
+           (`(reasoning . ,text)
+            (gptel--log "Ignoring reasoning block (thinking) response: %S" text))
+           ((pred stringp)
            (let* ((trimmed (string-trim response))
                   ;; Extract code from markdown code blocks
                   (code-content (if (string-match
@@ -261,7 +271,9 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
                                           'cursor t))
                  (overlay-put ov 'priority 1000))
                (gptel--setup-ghost-clear-hook)
-               (gptel--log "Displayed ghost text: %S" completion-text)))))))))
+               (gptel--log "Displayed ghost text: %S" completion-text))))
+           (_
+            (gptel--log "Unexpected response type: %S" response))))))))
 
 ;;;###autoload
 (defun gptel-accept-completion ()
