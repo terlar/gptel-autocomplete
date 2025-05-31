@@ -5,9 +5,9 @@
 ## Features
 
 - Request completions from LLMs with context around the cursor (context window size is configurable).
-- Provide additional context using standard `gptel` features (e.g. `gptel-add`)
 - Display inline ghost text completions.
 - Accept completions to insert them into your buffer.
+- Provide additional context using standard `gptel` features (e.g. `gptel-add`).
 
 ## Requirements
 
@@ -36,8 +36,14 @@ After installation, require and enable the package as needed:
 You can customize the amount of context sent before and after the cursor:
 
 ```elisp
-(setq gptel-autocomplete-before-context 6000) ; default
-(setq gptel-autocomplete-after-context 1000)  ; default
+(setq gptel-autocomplete-before-context 10000)
+(setq gptel-autocomplete-after-context 1000)
+```
+
+Set a custom temperature (lower values tend to yield better results):
+
+```elisp
+(setq gptel-autocomplete-temperature 0.1)
 ```
 
 Enable debug messages if you want detailed logs:
