@@ -117,7 +117,6 @@ I found the following techniques yielded good results:
 - Include an explicit cursor marker.
 - Provide explicit examples of bad output in the system prompt.
 - Use a lower temperature for more deterministic responses.
-- Provide the after-context at the beginning of the prompt. This does a good job preventing the model from repeating input lines from after the completion region (inspired by https://github.com/milanglacier/minuet-ai.el/blob/main/prompt.md).
 
 Here's an example of how code is sent in the user prompt:
 

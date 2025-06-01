@@ -111,15 +111,8 @@ This value will override `gptel-temperature` when calling `gptel-complete`."
                              "█END_COMPLETION█"))
          (context (concat before-context marked-line after-context))
          (prompt (concat "Complete the code at the cursor position █CURSOR█ in file '"
-                         filename "':\n\n"
-                         "Here is the code that occurs AFTER the completion region, for context:\n"
-                         "```\n"
-                         after-context
-                         "\n```\n\n"
-                         "Here is the preceding code, including the region to complete:\n"
-                         "```\n"
-                         (concat before-context marked-line)
-                         "\n```\n/no_think\n"))
+                         filename "':\n```\n"
+                         context "\n```\n/no_think\n"))
          (request-id (cl-incf gptel--completion-request-id))
          (target-point (point)))
     (gptel--log "Sending prompt of length %d (request-id: %d)"
@@ -152,6 +145,11 @@ function foo(a, b) {
 █START_COMPLETION█
     if (a < b) █CURSOR█
 █END_COMPLETION█
+}
+
+function bar() {
+    console.log('bar');
+}
 ```
 
 Example correct output:
@@ -164,12 +162,28 @@ Example correct output:
 █END_COMPLETION█
 ```
 
+Example WRONG output (do NOT do this; never provide output after end completion marker):
+```
+█START_COMPLETION█
+    if (a < b) {
+        return a;
+    }
+    return b;
+█END_COMPLETION█
+}
+
+function bar() {
+    console.log('bar');
+}
+```
+
 Example input:
 ```
 function foo(a, b) {
 █START_COMPLETION█
     █CURSOR█
 █END_COMPLETION█
+}
 ```
 
 Example correct output:
