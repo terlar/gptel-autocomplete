@@ -130,4 +130,4 @@ function foo(a, b) {
 
 Some things I tried that did NOT work:
 - Using FIM tokens (e.g. `<|fim_suffix|>`). Most chat models do not seem to follow FIM-style prompts well. Backticks and custom markers seemed to work better.
-- Placing the after-context at the beginning of the prompt (I was inspired to try this by [Minuet](https://github.com/milanglacier/minuet-ai.el/blob/main/prompt.md). I found that the response would usually repeat back part of the after-context when prompted in this way, and it was less prone to doing this when the completion region was included inline.
+- Placing the after-context at the beginning of the prompt (I was inspired to try this by [Minuet](https://github.com/milanglacier/minuet-ai.el/blob/main/prompt.md)). I found that the response would usually repeat back part of the after-context when prompted in this way, and it was less prone to doing this when the completion region was included inline.
