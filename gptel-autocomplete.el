@@ -111,8 +111,8 @@ This value will override `gptel-temperature` when calling `gptel-complete`."
                              "█END_COMPLETION█"))
          (context (concat before-context marked-line after-context))
          (prompt (concat "Complete the code at the cursor position █CURSOR█ in file '"
-                         filename "':\n```\n"
-                         context "\n```\n/no_think\n"))
+                         filename "':\n````````\n"
+                         context "\n````````\n/no_think\n"))
          (request-id (cl-incf gptel--completion-request-id))
          (target-point (point)))
     (gptel--log "Sending prompt of length %d (request-id: %d)"
@@ -128,7 +128,7 @@ markers indicate the exact region where your completion should be inserted, and 
 complete code in that one specific region.
 
 RESPONSE REQUIREMENTS:
-1. Response should be contained within code backticks (```)
+1. Response should be contained within code triple backticks (```)
 2. MUST start with █START_COMPLETION█ on its own line
 3. MUST end with █END_COMPLETION█ on its own line
 4. Complete the line containing █CURSOR█ (replacing █CURSOR█ with appropriate code)
