@@ -45,6 +45,15 @@ This value will override `gptel-temperature` when calling `gptel-complete`."
   :type 'number
   :group 'gptel-autocomplete)
 
+(defcustom gptel-autocomplete-use-context t
+  "Whether to include gptel context in autocomplete requests.
+When non-nil, gptel's context system (gptel-context) will be used
+to include additional context in completion requests. This allows
+the AI to consider related files or marked regions when generating
+completions."
+  :type 'boolean
+  :group 'gptel-autocomplete)
+
 (defvar gptel--completion-text nil
   "Current GPTel completion text.")
 
@@ -202,6 +211,8 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
 "
      :buffer (current-buffer)
      :position target-point
+     :transforms (when gptel-autocomplete-use-context
+                   gptel-prompt-transform-functions)
      :callback
      (lambda (response info)
        (gptel--log "Callback invoked: status=%s, request-id=%d, current-id=%d, raw-response=%S"

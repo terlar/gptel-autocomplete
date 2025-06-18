@@ -53,6 +53,16 @@ Enable debug messages if you want detailed logs:
 (setq gptel-autocomplete-debug t)
 ```
 
+Control whether gptel's context system is used in completions (enabled by default):
+
+```elisp
+;; Enable context inclusion.
+(setq gptel-autocomplete-use-context t)
+
+;; Disable context inclusion.
+(setq gptel-autocomplete-use-context nil)
+```
+
 ## Usage
 
 - `M-x gptel-complete` — Request a completion at point and display it as ghost text.
