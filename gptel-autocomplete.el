@@ -60,11 +60,25 @@ completions."
 (defvar gptel--completion-overlay nil
   "Overlay for displaying GPTel completion ghost text.")
 
+(defvar gptel-autocomplete--keymap-overlay nil
+  "Overlay used to surround point and make `gptel-autocomplete-overlay-map' activate.")
+
 (defvar gptel--completion-overlays nil
   "List of all GPTel completion overlays for cleanup.")
 
 (defvar gptel--completion-request-id 0
   "Counter for tracking completion requests.")
+
+(defvar gptel-autocomplete-map (make-sparse-keymap)
+  "Keymap active while GPTel autocomplete overlay is visible.")
+
+(defun gptel-autocomplete--get-or-create-keymap-overlay ()
+  "Make or return the local `gptel-autocomplete--keymap-overlay'."
+  (unless (overlayp gptel-autocomplete--keymap-overlay)
+    (setq gptel-autocomplete--keymap-overlay (make-overlay 1 1 nil nil t))
+    (overlay-put gptel-autocomplete--keymap-overlay 'keymap gptel-autocomplete-map)
+    (overlay-put gptel-autocomplete--keymap-overlay 'priority 101))
+  gptel-autocomplete--keymap-overlay)
 
 (defun gptel--log (fmt &rest args)
   "Log message FMT with ARGS if `gptel-autocomplete-debug` is non-nil."
@@ -278,14 +292,18 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
                          code-content)))))
              (setq gptel--completion-text completion-text)
              (when (and completion-text (not (string-empty-p completion-text)))
-               (let ((ov (make-overlay target-point target-point)))
+               (let ((ov (make-overlay target-point target-point))
+	             (ov-keymap (gptel-autocomplete--get-or-create-keymap-overlay)))
                  (setq gptel--completion-overlay ov)
                  (push ov gptel--completion-overlays)
+		 (push ov-keymap gptel--completion-overlays)
                  (overlay-put ov 'after-string
                               (propertize completion-text
                                           'face 'shadow
                                           'cursor t))
-                 (overlay-put ov 'priority 1000))
+                 (overlay-put ov 'priority 1000)
+		 (overlay-put ov 'keymap-overlay ov-keymap)
+		 (move-overlay (overlay-get ov 'keymap-overlay) (point) (min (point-max) (+ 1 (point)))))
                (gptel--setup-ghost-clear-hook)
                (gptel--log "Displayed ghost text: %S" completion-text))))
            (_
