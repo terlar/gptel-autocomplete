@@ -54,6 +54,18 @@ completions."
   :type 'boolean
   :group 'gptel-autocomplete)
 
+(defcustom gptel-autocomplete-idle-delay 0
+  "Time in seconds to wait before starting completion.
+
+Complete immediately if set to 0.
+Disable idle completion if set to nil."
+  :type '(choice
+          (number :tag "Seconds of delay")
+          (const :tag "Idle completion disabled" nil))
+  :group 'gptel-autocomplete)
+
+(defvar gptel-autocomplete--after-change-timer nil)
+
 (defvar gptel--completion-text nil
   "Current GPTel completion text.")
 
@@ -320,6 +332,35 @@ Example WRONG output (do NOT do this; never repeat the cursor token):
         (insert gptel--completion-text)
         (gptel-clear-completion))
     (message "No completion to accept.")))
+
+(defun gptel-autocomplete--after-change (_beg _end _len)
+  "Complete in `after-change-functions' hook."
+  (when gptel-autocomplete--after-change-timer
+    (cancel-timer gptel-autocomplete--after-change-timer))
+
+  (when (numberp gptel-autocomplete-idle-delay)
+    (setq gptel-autocomplete--after-change-timer
+          (run-with-idle-timer gptel-autocomplete-idle-delay
+                               nil
+                               #'gptel-autocomplete--after-change-debounce
+                               (current-buffer)))))
+
+(defun gptel-autocomplete--after-change-debounce (buffer)
+  "Complete in BUFFER."
+  (when (and (buffer-live-p buffer)
+             (equal (current-buffer) buffer)
+             (eolp)
+             gptel-autocomplete-mode)
+    (gptel-complete)))
+
+;;;###autoload
+(define-minor-mode gptel-autocomplete-mode
+  "Minor mode to enable automatic gptel autocompletion after commands."
+  :lighter " GPTel-AC"
+  :group 'gptel-autocomplete
+  (if gptel-autocomplete-mode
+      (add-hook 'after-change-functions #'gptel-autocomplete--after-change nil t)
+    (remove-hook 'after-change-functions #'gptel-autocomplete--after-change t)))
 
 (provide 'gptel-autocomplete)
 ;;; gptel-autocomplete.el ends here
